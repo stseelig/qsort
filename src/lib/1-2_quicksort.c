@@ -160,7 +160,7 @@ quick_partition(
 	*/
 	ITEM_NEXT(sec, lo, size);
 	pivot = quick_pivot_select(base, size, qsfp, sec, hi);
-	QSFP_SWAP(lo.ptr, pivot.ptr, size);
+	QSFP_SWAP(lo.ptr, pivot.ptr);
 	pivot = lo;
 	lo    = sec;
 
@@ -170,13 +170,13 @@ quick_partition(
 		ITEM_NEXT(lo, lo, size);
 	}
 	if UNLIKELY ( lo.idx > hi.idx ){
-		QSFP_SWAP(hi.ptr, pivot.ptr, size);
+		QSFP_SWAP(hi.ptr, pivot.ptr);
 		return hi;
 	}
 
 	/* main compare/swap loop */
 	goto loop_entr;
-	do {	QSFP_SWAP(lo.ptr, hi.ptr, size);
+	do {	QSFP_SWAP(lo.ptr, hi.ptr);
 
 		/* find the next leftmost item > the pivot */
 		while ( QSFP_COMPAR(lo.ptr, pivot.ptr) <= 0 ){
@@ -199,7 +199,7 @@ loop_exit:
 	/* swap the pivot into place */
 	ITEM_PREV(lo, lo, size);
 	if ( lo.idx != pivot.idx ){
-		QSFP_SWAP(lo.ptr, pivot.ptr, size);
+		QSFP_SWAP(lo.ptr, pivot.ptr);
 	}
 	return lo;
 }

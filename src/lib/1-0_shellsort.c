@@ -145,7 +145,7 @@ shell_cmp_loop(
 {
 	#pragma unroll(3u)
 	while ( QSFP_COMPAR(curr, next) > 0 ){
-		QSFP_SWAP(curr, next, size);
+		QSFP_SWAP(curr, next);
 		if ( idx1_p <= (uintptr_t) curr ){
 			next = curr;
 			curr = (uint8_t *) (((uintptr_t) curr) - gap_size);

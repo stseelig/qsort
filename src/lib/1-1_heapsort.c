@@ -121,12 +121,12 @@ heap_sort(
 
 	/* 2x sift loop (I tried a 3x sift loop, but it was slower) */
 	while ( nmemb > SIZE_C(3) ){
-		QSFP_SWAP((void *) last, base, size);
+		QSFP_SWAP((void *) last, base);
 
 		cmp    = QSFP_COMPAR(left.ptr, right.ptr);
 		branch = (cmp >= 0 ? left : right);
 		last  -= size;
-		QSFP_SWAP((void *) last, branch.ptr, size);
+		QSFP_SWAP((void *) last, branch.ptr);
 
 		nmemb -= 2u;
 		heap_siftdown(base, nmemb, size, qsfp, branch);
@@ -135,10 +135,10 @@ heap_sort(
 	}
 
 	/* tail: 2 or 3 items left */
-	QSFP_SWAP((void *) last, base, size);
+	QSFP_SWAP((void *) last, base);
 	if ( (last -= size) != (uintptr_t) base ){
 		if ( QSFP_COMPAR((void *) last, base) < 0 ){
-			QSFP_SWAP((void *) last, base, size);
+			QSFP_SWAP((void *) last, base);
 		}
 	}
 	return;
@@ -169,7 +169,7 @@ heap_siftdown(
 		}
 		if ( node.idx == nmemb_0 ){
 			if ( QSFP_COMPAR(node.ptr, root_ptr) > 0 ){
-				QSFP_SWAP(node.ptr, root_ptr, size);
+				QSFP_SWAP(node.ptr, root_ptr);
 			}
 			break;
 		}
@@ -185,7 +185,7 @@ heap_siftdown(
 				break;
 			}
 		}
-		QSFP_SWAP(node.ptr, root_ptr, size);
+		QSFP_SWAP(node.ptr, root_ptr);
 		root_ptr = node.ptr;
 	}
 	return;

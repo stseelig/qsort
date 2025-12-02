@@ -62,7 +62,7 @@ typedef /*@observer@*/ QSORT_SWAP_ABI x_sort_fnptr	sort_fnptr;
 	qsfp->compar.fn((x_a), (x_b), qsfp->compar.arg) \
 )
 
-#define QSFP_SWAP(x_a, x_b, x_size) { \
+#define QSFP_SWAP(x_a, x_b) { \
 	/*@-noeffectuncon@*/ \
 	qsfp->swap((x_a), (x_b)); \
 	/*@=noeffectuncon@*/ \
