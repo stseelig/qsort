@@ -171,7 +171,7 @@ qsort_quicksort(
 
 /* ------------------------------------------------------------------------ */
 
-/* returns the the pivot item*/
+/* returns the the pivot item */
 ALWAYS_INLINE struct Item
 quick_partition(
 	uint8_t *const RESTRICT base, const size_t size,
