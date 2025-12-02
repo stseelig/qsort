@@ -17,30 +17,6 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-struct Node {
-	/*@temp@*/
-	uint8_t	*ptr;
-	size_t	idx;
-};
-
-/* ------------------------------------------------------------------------ */
-
-/* returns a constructed heap node (C89 -Wpedantic initializer workaround) */
-CONST
-ALWAYS_INLINE struct Node
-NODE_BUILD(uint8_t *const RESTRICT base, const size_t idx, const size_t size)
-/*@*/
-{
-	struct Node retval;
-
-	retval.ptr = &base[idx * size];
-	retval.idx = idx;
-
-	return retval;
-}
-
-/* //////////////////////////////////////////////////////////////////////// */
-
 /* returns the index of the last (largest index) non-leaf node */
 #define HEAP_IDX_LASTBRANCH(x_nmemb)	(((x_nmemb) / 2u) - 1u)
 
@@ -73,7 +49,7 @@ ALWAYS_INLINE void heap_sort(
 #undef node
 ALWAYS_INLINE void heap_siftdown(
 	uint8_t *, size_t, size_t,
-	const struct QSortFnPtrs *RESTRICT , struct Node node
+	const struct QSortFnPtrs *RESTRICT , struct Item node
 )
 /*@modifies	*node.ptr@*/
 ;
@@ -112,7 +88,7 @@ heap_heapify(
 )
 /*@modifies	*base@*/
 {
-	struct Node node = NODE_BUILD(base, HEAP_IDX_LASTBRANCH(nmemb), size);
+	struct Item node = ITEM_BUILD(base, HEAP_IDX_LASTBRANCH(nmemb), size);
 
 	ASSUME(nmemb > SIZE_C(1));
 
@@ -133,11 +109,11 @@ heap_sort(
 )
 /*@modifies	*base@*/
 {
-	const struct Node root  = NODE_BUILD(base, SIZE_C(0), size);
-	const struct Node left  = NODE_BUILD(base, SIZE_C(1), size);
-	const struct Node right = NODE_BUILD(base, SIZE_C(2), size);
+	const struct Item root  = ITEM_BUILD(base, SIZE_C(0), size);
+	const struct Item left  = ITEM_BUILD(base, SIZE_C(1), size);
+	const struct Item right = ITEM_BUILD(base, SIZE_C(2), size);
 	/* * */
-	struct Node branch;
+	struct Item branch;
 	uintptr_t last = (uintptr_t) HEAP_PTR_LASTNODE(base, nmemb, size);
 	int cmp;
 
@@ -172,7 +148,7 @@ heap_sort(
 ALWAYS_INLINE void
 heap_siftdown(
 	uint8_t *const base, const size_t nmemb, const size_t size,
-	const struct QSortFnPtrs *const RESTRICT qsfp, struct Node node
+	const struct QSortFnPtrs *const RESTRICT qsfp, struct Item node
 )
 /*@modifies	*node.ptr@*/
 {

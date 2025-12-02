@@ -18,42 +18,6 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-struct Item {
-	/*@temp@*/
-	uint8_t	*ptr;
-	size_t	idx;
-};
-
-/* ------------------------------------------------------------------------ */
-
-/* returns a constructed array item (C89 -Wpedantic initializer workaround) */
-CONST
-ALWAYS_INLINE struct Item
-ITEM_BUILD(uint8_t *const base, const size_t idx, const size_t size)
-/*@*/
-{
-	struct Item retval;
-
-	retval.ptr = &base[idx * size];
-	retval.idx = idx;
-
-	return retval;
-}
-
-/* puts the item after 'src' into 'dest' */
-#define ITEM_NEXT(x_dest, x_src, x_size) { \
-	(x_dest).ptr = &(x_src).ptr[(x_size)]; \
-	(x_dest).idx = (x_src).idx + 1u; \
-}
-
-/* puts the item before 'src' into 'dest' */
-#define ITEM_PREV(x_dest, x_src, x_size) { \
-	(x_dest).ptr = (uint8_t *) (((uintptr_t) (x_src).ptr) - (x_size)); \
-	(x_dest).idx = (x_src).idx - 1u; \
-}
-
-/* ======================================================================== */
-
 #define QUICKSORT_DEPTH_MAX_MAX		(2u * (SIZE_BITS - 1u))
 
 struct QuickSort_Level {
