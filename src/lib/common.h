@@ -111,7 +111,7 @@
 #if __STDC_VERSION__ >= 201112L
 #define THREAD_LOCAL	_Thread_local
 #elif defined(__GNUC__)
-#define THREAD_LOCAL	__thread__
+#define THREAD_LOCAL	__thread
 #else
 #ifdef S_SPLINT_S
 #define THREAD_LOCAL
