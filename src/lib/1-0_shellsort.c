@@ -133,7 +133,7 @@ shell_sets_loop(
  * @param qsfp     - pointer to the 'compar' and 'swap' functions
  * @param gap      - number of items in the shellsort gap
  * @param curr     - pointer to the first item in the gap-set
- * @param item_idx - byte-index of 'curr'
+ * @param item_idx - index of 'curr' within the array
 **/
 ALWAYS_INLINE void
 shell_items_loop(
