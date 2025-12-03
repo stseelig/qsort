@@ -33,13 +33,23 @@ struct QuickSort_Stack {
 
 /* ------------------------------------------------------------------------ */
 
+/**@fn QUICKSORT_DEPTH_MAX
+ * @return maximum depth that quicksort will operate before calling a fallback
+ *
+ * @param nmemb - number of items in the array
+**/
 #define QUICKSORT_DEPTH_MAX(x_nmemb) ( \
 	2u * (SIZE_BITS - lzcnt_usize(x_nmemb) - 1u) \
 )
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* returns the index of the middle item (without overflowing) */
+/**@fn IDX_MID
+ * @return index of the middle item (without overflowing)
+ *
+ * @param lo - index of the lowest (first) item
+ * @param hi - index of the highest (last) item
+**/
 #define IDX_MID(x_lo, x_hi)	((x_lo) + (((x_hi) - (x_lo)) / 2u))
 
 /* ======================================================================== */
@@ -67,7 +77,14 @@ ALWAYS_INLINE struct Item quick_pivot_select(
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* iterative, hybrid quicksort (modified introsort) */
+/**@fn qsort_quicksort
+ * @brief an iterative, hybrid quicksort (modified introsort)
+ *
+ * @param base  - pointer to the beginning of the array to sort
+ * @param nmemb - number of items in the array
+ * @param size  - size of each array item
+ * @param qsfp  - pointer to the 'compar' and 'swap' functions
+**/
 BUILD_HIDDEN
 QSORT_SWAP_ABI
 NOINLINE void
@@ -135,7 +152,17 @@ qsort_quicksort(
 
 /* ------------------------------------------------------------------------ */
 
-/* returns the the pivot item */
+/**@fn quick_partition
+ * @brief selects a pivot item, then organizes the partition accordingly
+ *
+ * @return pivot item struct
+ *
+ * @param base - pointer to the beginning of the array to sort
+ * @param size - size of each array item
+ * @param qsfp - pointer to the 'compar' and 'swap' functions
+ * @param lo   - lowest (first) item in the partition
+ * @param hi   - highest (last) item in the partition
+**/
 ALWAYS_INLINE struct Item
 quick_partition(
 	uint8_t *const RESTRICT base, const size_t size,
@@ -151,7 +178,7 @@ quick_partition(
 	struct Item pivot, sec;
 
 	/* assuming that: (ASSUME() may make things slower)
-	       - '(nmemb > SIZE_C(2))' or '(nmemb > QSORT_HEAPSORT_MAX)'
+	       - '(hi.idx - lo.idx > SIZE_C(1))'; ie., at least 3 items
 	*/
 
 	/* choose a pivot then swap it to index-0 (lo)
@@ -204,7 +231,17 @@ loop_exit:
 	return lo;
 }
 
-/* returns the median of the lo, hi, and mid items */
+/**@fn quick_pivot_select
+ * @brief selects the median of the lo, hi, and mid items to be the pivot
+ *
+ * @return pivot item struct
+ *
+ * @param base - pointer to the beginning of the array to sort
+ * @param size - size of each array item
+ * @param qsfp - pointer to the 'compar' and 'swap' functions
+ * @param lo   - lowest (first) item in the partition
+ * @param hi   - highest (last) item in the partition
+**/
 ALWAYS_INLINE struct Item
 quick_pivot_select(
 	uint8_t *const RESTRICT base, const size_t size,

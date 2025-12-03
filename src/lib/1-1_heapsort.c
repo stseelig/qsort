@@ -17,13 +17,27 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* returns the index of the last (largest index) non-leaf node */
+/**@fn HEAP_IDX_LASTBRANCH
+ * @return index of the last (largest index) non-leaf node
+ *
+ * @param nmemb - number of items in the heap
+**/
 #define HEAP_IDX_LASTBRANCH(x_nmemb)	(((x_nmemb) / 2u) - 1u)
 
-/* returns the would-be index of a node's left child */
+/**@fn HEAP_IDX_LEFTCHILD
+ * @return would-be index of the node's left child
+ *
+ * @param parent - parent node
+**/
 #define HEAP_IDX_LEFTCHILD(x_parent)	((2u * (x_parent)) + 1u)
 
-/* returns a pointer to the last node */
+/**@fn HEAP_PTR_LASTNODE
+ * @return pointer to the last node
+ *
+ * @param base  - top (index-0) of the heap
+ * @param nmemb - number of items in the heap
+ * @param size  - size of each heap item
+**/
 #define HEAP_PTR_LASTNODE(x_base, x_nmemb, x_size) ( \
 	&(x_base)[((x_nmemb) - 1u) * (x_size)] \
 )
@@ -56,7 +70,14 @@ ALWAYS_INLINE void heap_siftdown(
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* heapsort */
+/**@fn qsort_heap
+ * @brief heapsort
+ *
+ * @param base  - pointer to the beginning of the array to sort
+ * @param nmemb - number of items in the array
+ * @param size  - size of each array item
+ * @param qsfp  - pointer to the 'compar' and 'swap' functions
+**/
 BUILD_HIDDEN
 QSORT_SWAP_ABI
 NOINLINE void
@@ -80,7 +101,14 @@ qsort_heapsort(
 
 /* ------------------------------------------------------------------------ */
 
-/* transform an (unsorted) array into a binary max-heap */
+/**@fn heap_heapify
+ * @brief transform an (unsorted) array into a binary max-heap
+ *
+ * @param base  - pointer to the beginning of the array to sort
+ * @param nmemb - number of items in the array
+ * @param size  - size of each array item
+ * @param qsfp  - pointer to the 'compar' and 'swap' functions
+**/
 ALWAYS_INLINE void
 heap_heapify(
 	uint8_t *const RESTRICT base, const size_t nmemb, const size_t size,
@@ -101,7 +129,14 @@ heap_heapify(
 	return;
 }
 
-/* transform a binary max-heap into a sorted array */
+/**@fn heap_sort
+ * @brief transform a binary max-heap into a sorted array
+ *
+ * @param base  - pointer to the beginning of the array to sort
+ * @param nmemb - number of items in the array
+ * @param size  - size of each array item
+ * @param qsfp  - pointer to the 'compar' and 'swap' functions
+**/
 ALWAYS_INLINE void
 heap_sort(
 	uint8_t *const RESTRICT base, size_t nmemb, const size_t size,
@@ -144,7 +179,15 @@ heap_sort(
 	return;
 }
 
-/* (partially) restore a binary max-heap by sifting a node down */
+/**@fn heap_sort
+ * @brief (partially) restore a binary max-heap by sifting a node down
+ *
+ * @param base  - pointer to the beginning of the array to sort
+ * @param nmemb - number of items in the array
+ * @param size  - size of each array item
+ * @param qsfp  - pointer to the 'compar' and 'swap' functions
+ * @param node  - root node to sift
+**/
 ALWAYS_INLINE void
 heap_siftdown(
 	uint8_t *const base, const size_t nmemb, const size_t size,

@@ -17,7 +17,15 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* $ man 3 qsort_r */
+/**@fn qsort_r
+ * @brief a more-thread-safe qsort(3); ($ man 3 qsort_r)
+ *
+ * @param base   - pointer to the beginning of the array to sort
+ * @param nmemb  - number of items in the array
+ * @param size   - size of each array item
+ * @param compar - comparison function
+ * @param arg    - third parameter for the comparison function
+**/
 BUILD_EXPORT
 void
 qsort_r(
@@ -25,7 +33,10 @@ qsort_r(
 	int (*const compar)(const void *, const void *, void *),
 	/*@null@*/ void *const arg
 )
-/*@modifies	*base@*/
+/*@globals	gt_swap_N_size@*/
+/*@modifies	*base,
+		gt_swap_N_size
+@*/
 {
 	size_t size_saved = 0;
 	/* * */
@@ -64,7 +75,9 @@ qsort_r(
 	}
 	else {	sort = qsort_quicksort; }
 
+	/*@-noeffectuncon@*/
 	sort(base, nmemb, size, &qsfp);
+	/*@=noeffectuncon@*/
 
 	if UNLIKELY ( size_saved != 0 ){
 		gt_swap_N_size = size_saved;

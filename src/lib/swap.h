@@ -67,16 +67,12 @@ const swap_fnptr swap_a16_table[SWAP_A1_NMEMB / 16u];
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/*@-redef@*/
-BUILD_HIDDEN BUILD_EXTERN
-THREAD_LOCAL size_t gt_swap_N_size;
-/*@=redef@*/
-
 #undef a
 #undef b
 BUILD_HIDDEN BUILD_EXTERN
 QSORT_SWAP_ABI
 void swap_Na1(void *RESTRICT a, void *RESTRICT b)
+/*@globals	gt_swap_N_size@*/
 /*@modifies	*a,
 		*b
 @*/
@@ -84,7 +80,12 @@ void swap_Na1(void *RESTRICT a, void *RESTRICT b)
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* returns a function pointer to a 'swap' function */
+/**@fn swap_get
+ * @return pointer to a 'swap' function
+ *
+ * @param base - address of the array to sort
+ * @param size - size of each array item
+**/
 CONST
 ALWAYS_INLINE swap_fnptr
 swap_get(UNUSED const uintptr_t base, const size_t size)

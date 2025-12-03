@@ -53,7 +53,14 @@ ALWAYS_INLINE void shell_cmp_loop(
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* shellsort */
+/**@fn qsort_shellsort
+ * @brief a simple, three-gap shellsort for small arrays
+ *
+ * @param base  - pointer to the beginning of the array to sort
+ * @param nmemb - number of items in the array
+ * @param size  - size of each array item
+ * @param qsfp  - pointer to the 'compar' and 'swap' functions
+**/
 BUILD_HIDDEN
 QSORT_SWAP_ABI
 NOINLINE void
@@ -82,7 +89,15 @@ qsort_shellsort(
 
 /* ------------------------------------------------------------------------ */
 
-/* loop through each set within a gap */
+/**@fn shell_sets_loop
+ * @brief loop through each set within a gap
+ *
+ * @param base  - pointer to the beginning of the array to sort
+ * @param nmemb - number of items in the array
+ * @param size  - size of each array item
+ * @param qsfp  - pointer to the 'compar' and 'swap' functions
+ * @param gap   - number of items in the shellsort gap
+**/
 ALWAYS_INLINE void
 shell_sets_loop(
 	uint8_t *RESTRICT base, const size_t nmemb, const size_t size,
@@ -109,7 +124,17 @@ shell_sets_loop(
 	return;
 }
 
-/* loop through each item within a set */
+/**@fn shell_items_loop
+ * @brief loop through each item within a gap-set
+ *
+ * @param idx1_p   - address of the first item in the next gap-set
+ * @param nmemb    - number of items in the array
+ * @param gap_size - number of bytes in the shellsort gap
+ * @param qsfp     - pointer to the 'compar' and 'swap' functions
+ * @param gap      - number of items in the shellsort gap
+ * @param curr     - pointer to the first item in the gap-set
+ * @param item_idx - byte-index of 'curr'
+**/
 ALWAYS_INLINE void
 shell_items_loop(
 	const uintptr_t idx1_p, const size_t nmemb, const size_t gap_size,
@@ -133,7 +158,15 @@ shell_items_loop(
 	return;
 }
 
-/* compare/insertion-sort the current item within its set */
+/**@fn shell_cmp_loop
+ * @brief compare/insertion-sort the current item within its gap-set
+ *
+ * @param curr     - pointer to the current array item
+ * @param next     - pointer to the next item in the gap-set
+ * @param idx1_p   - address of the first item in the next gap-set
+ * @param gap_size - number of bytes in the shellsort gap
+ * @param qsfp     - pointer to the 'compar' and 'swap' functions
+**/
 ALWAYS_INLINE void
 shell_cmp_loop(
 	uint8_t *curr, uint8_t *next, const uintptr_t idx1_p,

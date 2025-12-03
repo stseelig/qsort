@@ -76,6 +76,12 @@
 
 #ifdef UINT16_MAX
 
+/**@fn lzcnt_u16
+ * @return leading zero count (16-bit)
+ *
+ * @param x - input integer
+**/
+
 #if defined(X_CLZ16)
 #define lzcnt_u16(x_x)	X_CLZ16(x_x)
 
@@ -113,6 +119,12 @@ lzcnt_u16(uint16_t x)
 
 #ifdef UINT32_MAX
 
+/**@fn lzcnt_u32
+ * @return leading zero count (32-bit)
+ *
+ * @param x - input integer
+**/
+
 #if defined(X_CLZ32)
 #define lzcnt_u32(x_x)	X_CLZ32(x_x)
 
@@ -146,6 +158,12 @@ lzcnt_u32(uint32_t x)
 
 #ifdef UINT64_MAX
 
+/**@fn lzcnt_u64
+ * @return leading zero count (64-bit)
+ *
+ * @param x - input integer
+**/
+
 #if defined(X_CLZ64)
 #define lzcnt_u64(x_x)	X_CLZ64(x_x)
 
@@ -172,6 +190,12 @@ lzcnt_u64(uint64_t x)
 #endif	/* UINT64_MAX */
 
 /* ------------------------------------------------------------------------ */
+
+/**@fn lzcnt_usize
+ * @return leading zero count (size_t)
+ *
+ * @param x - input integer
+**/
 
 #if SIZE_MAX == UINT16_MAX
 #define lzcnt_usize(x_x)	lzcnt_u16(x_x)

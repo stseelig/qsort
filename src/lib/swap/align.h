@@ -97,14 +97,20 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-#define SWAP_X_BODY(x_n, x_align) \
+/**@fn SWAP_X_BODY
+ * @brief swaps two items, one byte at a time
+ *
+ * @param size  - size of each array item
+ * @param align - minimum alignment of each array item
+**/
+#define SWAP_X_BODY(x_size, x_align) \
 	uint8_t *const RESTRICT a_x = ASSUME_ALIGNED(a, (x_align)); \
 	uint8_t *const RESTRICT b_x = ASSUME_ALIGNED(b, (x_align)); \
 	/* * */ \
 	uint8_t t_a, t_b; \
 	unsigned int i; \
 	\
-	for ( i = 0; i < (x_n); ++i ){ \
+	for ( i = 0; i < (x_size); ++i ){ \
 		t_a    = a_x[i]; \
 		t_b    = b_x[i]; \
 		\
@@ -113,14 +119,21 @@
 	} \
 	return;
 
-#define SWAP_X_BODY_STDINT(x_n, x_align, x_type) \
+/**@fn SWAP_X_BODY_STDINT
+ * @brief swaps two items, using a <stdint.h> type
+ *
+ * @param size  - size of each array item
+ * @param align - minimum alignment of each array item
+ * @param type  - <stdint.h> type to use
+**/
+#define SWAP_X_BODY_STDINT(x_size, x_align, x_type) \
 	x_type *const RESTRICT a_x = ASSUME_ALIGNED(a, (x_align)); \
 	x_type *const RESTRICT b_x = ASSUME_ALIGNED(b, (x_align)); \
 	/* * */ \
 	x_type t_a, t_b; \
 	unsigned int i; \
 	\
-	for ( i = 0; i < (x_n) / sizeof(x_type); ++i ){ \
+	for ( i = 0; i < (x_size) / sizeof(x_type); ++i ){ \
 		t_a    = a_x[i]; \
 		t_b    = b_x[i]; \
 		\

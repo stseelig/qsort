@@ -13,6 +13,15 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
+/**@fn qsort
+ * @brief the <stdlib.h> sort function; ($ man 3 qsort)
+ *
+ * @param base   - pointer to the beginning of the array to sort
+ * @param nmemb  - number of items in the array
+ * @param size   - size of each array item
+ * @param compar - comparison function
+**/
+
 #if 0	/* arch-type */
 
 /* ------------------------------------------------------------------------ */

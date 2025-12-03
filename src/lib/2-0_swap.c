@@ -18,6 +18,15 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
+/**@fn swap_XaY
+ * @brief swaps two items of size 'X' and minimum alignment 'Y'
+ *
+ * @param a - pointer to the first item
+ * @param b - pointer to the second item
+**/
+
+/* ======================================================================== */
+
 #undef a
 #undef b
 QSORT_SWAP_ABI
@@ -442,16 +451,33 @@ const swap_fnptr swap_a16_table[2u] = {
 
 /* ======================================================================== */
 
+/**@var gt_swap_N_size
+ * @brief the size of the array items for swap_Na1()
+ *
+ * @note A thread-local global is used in order to optimize the sorting for
+ *   "nice" sizes, while keeping the implementation MT/AS-Safe possible
+ *   (depends on the 'compar'); ie., no extra, unneccessary register/stack
+ *   shuffling for the "nice" sizes.
+ *
+ * @note Needs to be saved/restored when used. @see "0-1_qsort_r.c"
+**/
 /*@-redef@*/
 BUILD_HIDDEN
 THREAD_LOCAL size_t gt_swap_N_size = SIZE_MAX;
 /*@=redef@*/
 
+/**@fn swap_Na1
+ * @brief swaps two items of a non-"nice" size
+ *
+ * @param a - pointer to the first item
+ * @param b - pointer to the second item
+**/
 BUILD_HIDDEN
 FLATTEN
 QSORT_SWAP_ABI
 void
 swap_Na1(void *const RESTRICT a, void *const RESTRICT b)
+/*@globals	gt_swap_N_size@*/
 /*@modifies	*a,
 		*b
 @*/

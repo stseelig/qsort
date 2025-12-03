@@ -28,7 +28,7 @@ static int qsort_compar_stub(const void *, const void *, void *) /*@*/;
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* $ man 3 qsort */
+/**@see "0-0_qsort.c" **/
 BUILD_EXPORT
 void
 qsort(
@@ -48,6 +48,17 @@ qsort(
 
 /* ------------------------------------------------------------------------ */
 
+/**@fn qsort_compar_stub
+ * @brief portable, non-UB way to wrapper qsort_r(3)'s 'compar'
+ *
+ * @note Adds a bit of overhead; use the assembler versions.
+ *
+ * @returns like memcmp(3)
+ *
+ * @param a   - pointer to the first item
+ * @param b   - pointer to the second item
+ * @param arg - pointer to the actual comparison function struct
+**/
 static int
 qsort_compar_stub(const void *const a, const void *const b, void *const arg)
 /*@*/
