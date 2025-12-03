@@ -27,7 +27,7 @@
 /**@fn HEAP_IDX_LEFTCHILD
  * @return would-be index of the node's left child
  *
- * @param parent - parent node
+ * @param parent - parent node's index
 **/
 #define HEAP_IDX_LEFTCHILD(x_parent)	((2u * (x_parent)) + 1u)
 
