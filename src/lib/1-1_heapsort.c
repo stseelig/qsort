@@ -205,12 +205,16 @@ heap_siftdown(
 	for(;;) {
 		node.idx = HEAP_IDX_LEFTCHILD(node.idx);
 		node.ptr = &base[node.idx * size];
-
-		/* break at either a leaf node or an only child (last node) */
+		if UNLIKELY ( (uintptr_t) node.ptr <= (uintptr_t) root_ptr ){
+			/* index overflow */
+			break;
+		}
 		if ( node.idx >  nmemb_0 ){
+			/* leaf node */
 			break;
 		}
 		if ( node.idx == nmemb_0 ){
+			/* only child (last node) */
 			if ( QSFP_COMPAR(node.ptr, root_ptr) > 0 ){
 				QSFP_SWAP(node.ptr, root_ptr);
 			}
