@@ -40,10 +40,16 @@
  *
  * @param nmemb - number of items in the array
  * @param size  - size of each array item
+ *
+ * @note affected by 'QSORT_OPT_SLOW_CPU'
 **/
+#ifndef QSORT_OPT_SLOW_CPU
 #define QSORT_HEAPSORT_CHECK(x_nmemb, x_size)	( \
 	(x_nmemb) * (x_size) <= QSORT_HEAPSORT_MAX_BYTES \
 )
+#else
+#define QSORT_HEAPSORT_CHECK(x_nmemb, x_size)	FALSE
+#endif	/* QSORT_OPT_SLOW_CPU */
 
 /* //////////////////////////////////////////////////////////////////////// */
 

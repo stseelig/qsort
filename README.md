@@ -22,6 +22,8 @@ Swapping is optimized for arrays with member sizes <=16, 20, 24, 28, or 32.
 Other sizes will take a little performance hit.
 
 
+### Caveats
+
 It will perform below par if your CPU:
 
 * has a bad branch predictor
@@ -41,6 +43,11 @@ I highly recommend using clang(1) instead of gcc(1).
 
 
 ### Defines
+
+QSORT_OPT_SLOW_CPU
+
+* use if your CPU meets either of the first two 'Caveats'
+(ie., is too underpowered to be decent at heapsort)
 
 QSORT_OPT_NO_ASM
 
