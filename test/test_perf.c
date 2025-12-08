@@ -119,6 +119,7 @@ main(void)
 			break;
 		}
 #endif
+#if 1
 		#pragma nounroll
 		for ( nmemb = 1u; nmemb <= 100u; ++nmemb ){
 			#pragma nounroll
@@ -126,6 +127,7 @@ main(void)
 				test_single(nmemb, size, align);
 			}
 		}
+#endif
 #if 1
 		#pragma nounroll
 		for ( nmemb = 100u; nmemb <= 10000u; nmemb += 100u ){
@@ -134,6 +136,8 @@ main(void)
 				test_single(nmemb, size, align);
 			}
 		}
+#endif
+#if 1
 		#pragma nounroll
 		for ( nmemb = 10000uL; nmemb <= 100000uL; nmemb += 10000uL ){
 			#pragma nounroll

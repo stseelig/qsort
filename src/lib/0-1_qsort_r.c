@@ -69,6 +69,9 @@ qsort_r(
 	if ( nmemb <= QSORT_SHELLSORT_MAX_NMEMB ){
 		qsort_shellsort(base, nmemb, size, &qsfp);
 	}
+	else if ( nmemb * size <= QSORT_HEAPSORT_MAX_ARRAY ){
+		qsort_heapsort( base, nmemb, size, &qsfp);
+	}
 	else {	qsort_quicksort(base, nmemb, size, &qsfp); }
 
 	if UNLIKELY ( size_saved != 0 ){

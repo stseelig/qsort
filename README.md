@@ -13,6 +13,8 @@ Three different sorting algorithms are used:
 
 * small arrays  - shellsort
 
+* medium arrays - heapsort
+
 * large arrays  - iterative quicksort with shellsort for small partitions
 and heapsort as a fallback
 
