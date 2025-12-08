@@ -120,16 +120,20 @@ qsort_quicksort(
 			}
 			else {	break; }
 		}
-		if ( QSORT_HEAPSORT_CHECK(nmemb, size)
-		    ||
-		     (stack.depth >= stack.depth_max)
-		){
-			qsort_heapsort(level.lo.ptr, nmemb, size, qsfp);
+		else if ( nmemb <= QSORT_SHELLSORT_MAX_NMEMB ){
+			qsort_shellsort(level.lo.ptr, nmemb, size, qsfp);
 			if ( stack.depth-- > 0 ){
 				continue;
 			}
 			else {	break; }
 		}
+		else if ( stack.depth >= stack.depth_max ){
+			qsort_heapsort(level.lo.ptr, nmemb, size, qsfp);
+			if ( stack.depth-- > 0 ){
+				continue;
+			}
+			else {	break; }
+		} else{;}
 
 		pivot = quick_partition(base, size, qsfp, level.lo, level.hi);
 

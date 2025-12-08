@@ -209,17 +209,17 @@ heap_siftdown(
 			/* index overflow */
 			break;
 		}
-		if ( node.idx >  nmemb_0 ){
+		else if ( node.idx >  nmemb_0 ){
 			/* leaf node */
 			break;
 		}
-		if ( node.idx == nmemb_0 ){
+		else if ( node.idx == nmemb_0 ){
 			/* only child (last node) */
 			if ( QSFP_COMPAR(node.ptr, root_ptr) > 0 ){
 				QSFP_SWAP(node.ptr, root_ptr);
 			}
 			break;
-		}
+		} else{;}
 
 		twin_ptr = &node.ptr[size];
 		if ( QSFP_COMPAR(twin_ptr, root_ptr) > 0 ){

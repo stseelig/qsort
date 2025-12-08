@@ -13,9 +13,8 @@ Three different sorting algorithms are used:
 
 * small arrays  - shellsort
 
-* medium arrays - heapsort
-
-* large arrays  - iterative quicksort with heapsort as a fallback
+* large arrays  - iterative quicksort with shellsort for small partitions
+and heapsort as a fallback
 
 
 Swapping is optimized for arrays with member sizes <=16, 20, 24, 28, or 32.
@@ -27,8 +26,6 @@ Other sizes will take a little performance hit.
 It will perform below par if your CPU:
 
 * has a bad branch predictor
-
-* cannot do >2 integer operations at a time
 
 * makes relatively slow (indirect) function calls
 
@@ -43,11 +40,6 @@ I highly recommend using clang(1) instead of gcc(1).
 
 
 ### Defines
-
-QSORT_OPT_SLOW_CPU
-
-* use if your CPU meets either of the first two 'Caveats'
-(ie., is too underpowered to be decent at heapsort)
 
 QSORT_OPT_NO_ASM
 

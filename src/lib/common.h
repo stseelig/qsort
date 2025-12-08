@@ -38,11 +38,6 @@
 #error "SIZE_MAX"
 #endif	/* SIZE_MAX */
 
-/* ======================================================================== */
-
-#define TRUE	(0==0)
-#define FALSE	(0!=0)
-
 /* //////////////////////////////////////////////////////////////////////// */
 
 #ifdef __GNUC__
@@ -224,8 +219,8 @@
 #endif	/* ASSUME */
 
 #if X_HAS_BUILTIN_GNUC(X_BUILTIN_GNUC_EXPECT)
-#define LIKELY(x_cond)		(X_BUILTIN_GNUC_EXPECT((x_cond), TRUE))
-#define UNLIKELY(x_cond)	(X_BUILTIN_GNUC_EXPECT((x_cond), FALSE))
+#define LIKELY(x_cond)		(X_BUILTIN_GNUC_EXPECT((x_cond), 0==0))
+#define UNLIKELY(x_cond)	(X_BUILTIN_GNUC_EXPECT((x_cond), 0!=0))
 #else
 #define LIKELY(x_cond)		(x_cond)
 #define UNLIKELY(x_cond)	(x_cond)

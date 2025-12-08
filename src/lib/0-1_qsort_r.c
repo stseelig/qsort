@@ -40,7 +40,6 @@ qsort_r(
 {
 	size_t size_saved = 0;
 	/* * */
-	sort_fnptr sort;
 	swap_fnptr swap;
 	struct QSortFnPtrs qsfp;
 
@@ -67,17 +66,10 @@ qsort_r(
 	qsfp.compar.arg	= arg;
 	qsfp.swap	= swap;
 
-	if ( QSORT_SHELLSORT_CHECK(nmemb, size) ){
-		sort = qsort_shellsort;
+	if ( nmemb <= QSORT_SHELLSORT_MAX_NMEMB ){
+		qsort_shellsort(base, nmemb, size, &qsfp);
 	}
-	else if ( QSORT_HEAPSORT_CHECK(nmemb, size) ){
-		sort = qsort_heapsort;
-	}
-	else {	sort = qsort_quicksort; }
-
-	/*@-noeffectuncon@*/
-	sort(base, nmemb, size, &qsfp);
-	/*@=noeffectuncon@*/
+	else {	qsort_quicksort(base, nmemb, size, &qsfp); }
 
 	if UNLIKELY ( size_saved != 0 ){
 		gt_swap_N_size = size_saved;

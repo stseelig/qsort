@@ -18,38 +18,7 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-/* limits are optimized for the "nice" sizes */
-
-#define QSORT_SHELLSORT_MAX_NMEMB	SIZE_C(  56)
-#define QSORT_HEAPSORT_MAX_BYTES	SIZE_C(8192)
-
-/* ------------------------------------------------------------------------ */
-
-/**@fn QSORT_SHELLSORT_CHECK
- * @return whether shellsort should be used
- *
- * @param nmemb - number of items in the array
- * @param size  - (unused)
-**/
-#define QSORT_SHELLSORT_CHECK(x_nmemb, x_size)	( \
-	(x_nmemb) <= QSORT_SHELLSORT_MAX_NMEMB \
-)
-
-/**@fn QSORT_HEAPSORT_CHECK
- * @return whether heapsort should be used
- *
- * @param nmemb - number of items in the array
- * @param size  - size of each array item
- *
- * @note affected by 'QSORT_OPT_SLOW_CPU'
-**/
-#ifndef QSORT_OPT_SLOW_CPU
-#define QSORT_HEAPSORT_CHECK(x_nmemb, x_size)	( \
-	(x_nmemb) * (x_size) <= QSORT_HEAPSORT_MAX_BYTES \
-)
-#else
-#define QSORT_HEAPSORT_CHECK(x_nmemb, x_size)	FALSE
-#endif	/* QSORT_OPT_SLOW_CPU */
+#define QSORT_SHELLSORT_MAX_NMEMB	SIZE_C(56)
 
 /* //////////////////////////////////////////////////////////////////////// */
 
@@ -69,11 +38,6 @@ struct QSortFnPtrs {
 	struct QSortCompar	compar;
 	swap_fnptr		swap;
 };
-
-typedef void (*x_sort_fnptr)(
-	uint8_t *RESTRICT, size_t, size_t, const struct QSortFnPtrs *RESTRICT
-);
-typedef /*@observer@*/ QSORT_SWAP_ABI x_sort_fnptr	sort_fnptr;
 
 /* ------------------------------------------------------------------------ */
 
