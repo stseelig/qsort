@@ -127,7 +127,7 @@ qsort_quicksort(
 			}
 			else {	break; }
 		}
-		else if ( stack.depth >= stack.depth_max ){
+		else if UNLIKELY ( stack.depth >= stack.depth_max ){
 			qsort_heapsort(level.lo.ptr, nmemb, size, qsfp);
 			if ( stack.depth-- > 0 ){
 				continue;
@@ -197,12 +197,15 @@ quick_partition(
 
 	/* check if each item is <= the pivot */
 	#pragma unroll(2u)
-	while ( (lo.idx <= hi.idx) && (QSFP_COMPAR(lo.ptr, pivot.ptr) <= 0) ){
-		ITEM_NEXT(lo, lo, size);
-	}
-	if UNLIKELY ( lo.idx > hi.idx ){
-		QSFP_SWAP(hi.ptr, pivot.ptr);
-		return hi;
+	while LIKELY ( lo.idx <= hi.idx ){
+		if ( QSFP_COMPAR(lo.ptr, pivot.ptr) <= 0 ){
+			ITEM_NEXT(lo, lo, size);
+			if UNLIKELY ( lo.idx > hi.idx ){
+				QSFP_SWAP(hi.ptr, pivot.ptr);
+				return hi;
+			}
+		}
+		else {	break; }
 	}
 
 	/* main compare/swap loop */
@@ -224,12 +227,12 @@ loop_entr:
 				goto loop_exit;
 			}
 		}
-	} while ( lo.idx < hi.idx );
+	} while LIKELY ( lo.idx < hi.idx );
 loop_exit:
 
 	/* swap the pivot into place */
 	ITEM_PREV(lo, lo, size);
-	if ( lo.idx != pivot.idx ){
+	if LIKELY ( lo.idx != pivot.idx ){
 		QSFP_SWAP(lo.ptr, pivot.ptr);
 	}
 	return lo;
