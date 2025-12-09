@@ -127,7 +127,7 @@ qsort_quicksort(
 			}
 			else {	break; }
 		}
-		else if UNLIKELY ( stack.depth >= stack.depth_max ){
+		else if UNLIKELY ( stack.depth > stack.depth_max ){
 			qsort_heapsort(level.lo.ptr, nmemb, size, qsfp);
 			if ( stack.depth-- > 0 ){
 				continue;
