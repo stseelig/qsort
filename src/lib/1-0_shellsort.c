@@ -70,7 +70,9 @@ qsort_shellsort(
 )
 /*@modifies	*base@*/
 {
-	/* assuming that: (ASSUME() may make things slower)
+	ASSUME(nmemb <= QSORT_SHELLSORT_MAX_NMEMB);
+
+	/* also assuming that: (ASSUME() may make things slower)
 	       - (nmemb > SIZE_C(1))
 	       - (size  > 0)
 	       - '(nmemb * size)' will not overflow
@@ -145,6 +147,7 @@ shell_items_loop(
 {
 	uint8_t *next;
 
+	/* max 'nmemb' is very small, so the increment cannot overflow */
 	while ( (item_idx += gap) < nmemb ){
 		next = &curr[gap_size];
 		shell_cmp_loop(curr, next, idx1_p, gap_size, qsfp);
