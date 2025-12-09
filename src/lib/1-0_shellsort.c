@@ -143,17 +143,12 @@ shell_items_loop(
 )
 /*@modifies	*curr@*/
 {
-	const size_t limit = nmemb - gap;
-	/* * */
 	uint8_t *next;
 
-	for(;;) {
+	while ( (item_idx += gap) < nmemb ){
 		next = &curr[gap_size];
 		shell_cmp_loop(curr, next, idx1_p, gap_size, qsfp);
-		if ( (item_idx += gap) < limit ){
-			curr = next;
-		}
-		else {	break; }
+		curr = next;
 	}
 	return;
 }
