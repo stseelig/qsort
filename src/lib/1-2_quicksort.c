@@ -18,7 +18,7 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-#define QUICKSORT_DEPTH_MAX_MAX		(2u * SIZE_BITS)
+#define QUICKSORT_DEPTH_MAX_MAX		((2u * SIZE_BITS) - 1u)
 
 struct QuickSort_Level {
 	struct Item lo;
@@ -127,7 +127,7 @@ qsort_quicksort(
 			}
 			else {	break; }
 		}
-		else if UNLIKELY ( stack.depth > stack.depth_max ){
+		else if UNLIKELY ( stack.depth == stack.depth_max ){
 			qsort_heapsort(level.lo.ptr, nmemb, size, qsfp);
 			if ( stack.depth-- > 0 ){
 				continue;
