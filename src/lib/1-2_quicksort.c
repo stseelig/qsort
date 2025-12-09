@@ -18,7 +18,7 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-#define QUICKSORT_DEPTH_MAX_MAX		(2u * (SIZE_BITS - 1u))
+#define QUICKSORT_DEPTH_MAX_MAX		(2u * SIZE_BITS)
 
 struct QuickSort_Level {
 	struct Item lo;
@@ -28,7 +28,7 @@ struct QuickSort_Level {
 struct QuickSort_Stack {
 	unsigned int		depth_max;
 	unsigned int		depth;
-	struct QuickSort_Level	level[QUICKSORT_DEPTH_MAX_MAX + 1u];
+	struct QuickSort_Level	level[QUICKSORT_DEPTH_MAX_MAX];
 };
 
 /* ------------------------------------------------------------------------ */
