@@ -260,11 +260,11 @@ quick_pivot_select(
 	struct Item mid = ITEM_BUILD(base, IDX_MID(lo.idx, hi.idx), size);
 
 	if ( QSFP_COMPAR(lo.ptr, hi.ptr) <= 0 ){
-		if ( QSFP_COMPAR(lo.ptr, mid.ptr) >= 0 ){
+		if ( QSFP_COMPAR(lo.ptr, mid.ptr) > 0 ){
 			mid = lo;
 		}
 	}
-	else {	if ( QSFP_COMPAR(hi.ptr, mid.ptr) >= 0 ){
+	else {	if ( QSFP_COMPAR(hi.ptr, mid.ptr) > 0 ){
 			mid = hi;
 		}
 	}
