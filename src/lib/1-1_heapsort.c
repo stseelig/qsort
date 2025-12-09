@@ -206,7 +206,7 @@ heap_siftdown(
 		node.idx = HEAP_IDX_LEFTCHILD(node.idx);
 		node.ptr = &base[node.idx * size];
 		if UNLIKELY ( (uintptr_t) node.ptr <= (uintptr_t) root_ptr ){
-			/* index overflow */
+			/* index/address overflow */
 			break;
 		}
 		else if ( node.idx >  nmemb_0 ){
