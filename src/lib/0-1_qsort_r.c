@@ -30,7 +30,7 @@ BUILD_EXPORT
 void
 qsort_r(
 	void *const base, const size_t nmemb, const size_t size,
-	int (*const compar)(const void *, const void *, void *),
+	int (*const compar)(const void *, const void *, /*@null@*/ void *),
 	/*@null@*/ void *const arg
 )
 /*@globals	gt_swap_N_size@*/

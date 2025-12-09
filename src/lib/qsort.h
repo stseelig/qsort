@@ -23,7 +23,7 @@
 
 /* //////////////////////////////////////////////////////////////////////// */
 
-typedef int (*x_compar_fnptr)(const void *, const void *, void *);
+typedef int (*x_compar_fnptr)(const void *, const void *, /*@null@*/ void *);
 typedef /*@observer@*/ x_compar_fnptr			compar_fnptr;
 
 typedef void (*x_swap_fnptr)(void *RESTRICT, void *RESTRICT);
