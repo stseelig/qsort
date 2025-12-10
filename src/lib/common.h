@@ -242,9 +242,9 @@
 #endif	/* PRAGMA_UNROLL */
 
 #if defined(__clang__)
-#define PRAGMA_NOUNROLL		_Pragma(STRINGIFY(nounroll))
+#define PRAGMA_NOUNROLL		_Pragma("nounroll")
 #elif defined(__GNUC__)
-#define PRAGMA_NOUNROLL		_Pragma(STRINGIFY(GCC unroll(0)))
+#define PRAGMA_NOUNROLL		_Pragma("GCC unroll(0)")
 #else
 #define PRAGMA_NOUNROLL
 #endif	/* PRAGMA_NOUNROLL */

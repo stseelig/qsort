@@ -1,3 +1,13 @@
+/* ///////////////////////////////////////////////////////////////////////////
+//                                                                          //
+// qsort/test_perf.c                                                        //
+//                                                                          //
+//////////////////////////////////////////////////////////////////////////////
+//                                                                          //
+// Copyright (C) 2025, Shane Seelig                                         //
+// SPDX-License-Identifier: GPL-3.0-or-later                                //
+//                                                                          //
+/////////////////////////////////////////////////////////////////////////// */
 
 #include <assert.h>
 #include <stdio.h>
@@ -5,28 +15,174 @@
 #include <stdlib.h>
 #include <string.h>
 
+/* ======================================================================== */
+
 #if UINTPTR_MAX < SIZE_MAX
 #error "UINTPTR_MAX < SIZE_MAX"
 #endif
 
-#define X_STRINGIFY(x_x)	#x_x
-#define STRINGIFY(x_x)		X_STRINGIFY(x_x)
+/* //////////////////////////////////////////////////////////////////////// */
+
+#if SIZE_MAX == UINT16_MAX
+#define SIZE_C(x_x)	UINT16_C(x_x)
+#elif SIZE_MAX == UINT32_MAX
+#define SIZE_C(x_x)	UINT32_C(x_x)
+#elif SIZE_MAX == UINT64_MAX
+#define SIZE_C(x_x)	UINT64_C(x_x)
+#else
+#error "SIZE_MAX"
+#endif	/* SIZE_MAX */
 
 #if defined(__clang__)
-#define PRAGMA_NOUNROLL		_Pragma(STRINGIFY(nounroll))
+#define PRAGMA_NOUNROLL		_Pragma("nounroll")
 #elif defined(__GNUC__)
-#define PRAGMA_NOUNROLL		_Pragma(STRINGIFY(GCC unroll(0)))
+#define PRAGMA_NOUNROLL		_Pragma("GCC unroll(0)")
 #else
 #define PRAGMA_NOUNROLL
 #endif	/* PRAGMA_NOUNROLL */
 
+#ifndef __GNUC__
+/*@-namechecks@*/
+#define __attribute__(x_x)
+/*@=namechecks@*/
+#endif	/* __GNUC__ */
+
+/* //////////////////////////////////////////////////////////////////////// */
+
+#undef base
 extern void qsort_r(
-	void *, size_t, size_t,
+	void *base, size_t, size_t,
 	int(*)(const void *, const void *, void *), void *
-);
+)
+/*@modifies	*base@*/
+;
+
+/*@only@*/
+extern void *aligned_alloc(size_t, size_t)
+/*@globals	internalState@*/
+/*@modifies	internalState@*/
+;
+
+/* ======================================================================== */
+
+#undef base
+static void array_init(uint8_t *base, size_t)
+/*@globals	internalState@*/
+/*@modifies	internalState,
+		*base
+@*/
+;
+
+/*@maynotreturn@*/
+static void array_sort_check(const uint8_t *, size_t, size_t)
+/*@globals	fileSystem@*/
+/*@modifies	fileSystem@*/
+;
+
+static int compar(const void *, const void *, void *) /*@*/;
+
+static size_t size_aligned_extra(size_t, size_t, size_t) /*@*/;
+
+static void test_single(size_t, size_t, size_t)
+/*@globals	fileSystem,
+		internalState
+@*/
+/*@modifies	fileSystem,
+		internalState
+@*/
+;
+
+/* //////////////////////////////////////////////////////////////////////// */
+
+int
+main(void)
+/*@globals	fileSystem,
+		internalState
+@*/
+/*@modifies	fileSystem,
+		internalState
+@*/
+{
+	/*@unused@*/ __attribute__((unused))
+	static const size_t nice_size_table[] = {
+		 SIZE_C( 1), SIZE_C( 2), SIZE_C( 3), SIZE_C( 4), SIZE_C( 5),
+		 SIZE_C( 6), SIZE_C( 7), SIZE_C( 8), SIZE_C( 9), SIZE_C(10),
+		 SIZE_C(11), SIZE_C(12), SIZE_C(13), SIZE_C(14), SIZE_C(15),
+		 SIZE_C(16), SIZE_C(20), SIZE_C(24), SIZE_C(28), SIZE_C(32),
+		 0
+	};
+	/*@unused@*/ __attribute__((unused))
+	static const size_t pow2_size_table[] = {
+		SIZE_C(  1), SIZE_C(  2), SIZE_C(  4), SIZE_C(  8),
+		SIZE_C( 16), SIZE_C( 32), SIZE_C( 64), SIZE_C(128),
+		0
+	};
+	size_t nmemb, size, align;
+	/*@unused@*/ __attribute__((unused))
+	unsigned int i;
+
+	srand(0x6969u);
+
+#if 0
+	PRAGMA_NOUNROLL
+	for ( size = SIZE_C(1); size <= SIZE_C(75); ++size ){
+#else
+	PRAGMA_NOUNROLL
+	for ( i = 0; 0==0 /* gcc */; ++i ){
+#if 1
+		size = nice_size_table[i];
+#else
+		size = pow2_size_table[i];
+#endif
+		if ( size == 0 ){
+			break;
+		}
+#endif
+
+#if 1
+		PRAGMA_NOUNROLL
+		for ( nmemb = SIZE_C(1); nmemb <= SIZE_C(100); ++nmemb ){
+			align = SIZE_C(1);
+			PRAGMA_NOUNROLL
+			for ( ; align <= SIZE_C(32); align *= 2u ){
+				test_single(nmemb, size, align);
+			}
+		}
+#endif
+#if 1
+		nmemb = SIZE_C(100);
+		PRAGMA_NOUNROLL
+		for ( ; nmemb <= SIZE_C(10000); nmemb += 100u ){
+			align = SIZE_C(1);
+			PRAGMA_NOUNROLL
+			for ( ; align <= SIZE_C(32); align *= 2u ){
+				test_single(nmemb, size, align);
+			}
+		}
+#endif
+#if 1
+		nmemb = SIZE_C(10000);
+		PRAGMA_NOUNROLL
+		for ( ; nmemb <= SIZE_C(100000); nmemb += 10000u ){
+			align = SIZE_C(1);
+			PRAGMA_NOUNROLL
+			for ( ; align <= SIZE_C(32); align *= 2u ){
+				test_single(nmemb, size, align);
+			}
+		}
+#endif
+	}
+	return 0;
+}
+
+/* ------------------------------------------------------------------------ */
 
 static void
 array_init(uint8_t *const base, const size_t size_array)
+/*@globals	internalState@*/
+/*@modifies	internalState,
+		*base
+@*/
 {
 	int r;
 	size_t i;
@@ -42,10 +198,13 @@ array_init(uint8_t *const base, const size_t size_array)
 	return;
 }
 
+/*@maynotreturn@*/
 static void
 array_sort_check(
 	const uint8_t *const base, const size_t nmemb, const size_t size
 )
+/*@globals	fileSystem@*/
+/*@modifies	fileSystem@*/
 {
 	int cmp;
 	size_t i;
@@ -67,8 +226,24 @@ compar(const void *a, const void *b, void *arg)
 	return memcmp(a, b, (size_t) ((uintptr_t) arg));
 }
 
+static size_t
+size_aligned_extra(const size_t nmemb, const size_t size, const size_t align)
+/*@*/
+{
+	const size_t size_a = (nmemb + (align / size) + 1u) * size;
+	const size_t mod    = size_a % align;
+
+	return size_a + (mod != 0 ? align - mod : 0);
+}
+
 static void
 test_single(const size_t nmemb, const size_t size, const size_t align)
+/*@globals	fileSystem,
+		internalState
+@*/
+/*@modifies	fileSystem,
+		internalState
+@*/
 {
 	uint8_t *ptr, *base;
 
@@ -80,7 +255,7 @@ test_single(const size_t nmemb, const size_t size, const size_t align)
 #endif
 
 	/* each test gets its own allocation for valgrind */
-	ptr  = aligned_alloc(align, (nmemb + (align / size) + 1u) * size);
+	ptr  = aligned_alloc(align, size_aligned_extra(nmemb, size, align));
 	assert(ptr != NULL);
 	base = &ptr[align];
 
@@ -93,71 +268,4 @@ test_single(const size_t nmemb, const size_t size, const size_t align)
 	return;
 }
 
-
-int
-main(void)
-{
-	__attribute__((unused))
-	static const size_t nice_size_table[] = {
-		 1u,  2u,  3u,  4u,  5u,  6u,  7u,  8u,
-		 9u, 10u, 11u, 12u, 13u, 14u, 15u, 16u,
-		20u, 24u, 28u, 32u,
-		 0u
-	};
-	__attribute__((unused))
-	static const size_t pow2_size_table[] = {
-		1u, 2u, 4u, 8u, 16u, 32u, 64u, 128u,
-		0u
-	};
-	size_t nmemb, size, align;
-	__attribute__((unused))
-	unsigned int i;
-
-	srand(0x6969u);
-
-#if 0
-	PRAGMA_NOUNROLL
-	for ( size = 1u; size <= 75u; ++size ){
-#else
-	PRAGMA_NOUNROLL
-	for ( i = 0; 0==0 /* gcc */; ++i ){
-#if 1
-		size = nice_size_table[i];
-#else
-		size = pow2_size_table[i];
-#endif
-		if ( size == 0 ){
-			break;
-		}
-#endif
-
-#if 1
-		PRAGMA_NOUNROLL
-		for ( nmemb = 1u; nmemb <= 100u; ++nmemb ){
-			PRAGMA_NOUNROLL
-			for ( align = 1u; align <= 32u; align *= 2u ){
-				test_single(nmemb, size, align);
-			}
-		}
-#endif
-#if 1
-		PRAGMA_NOUNROLL
-		for ( nmemb = 100u; nmemb <= 10000u; nmemb += 100u ){
-			PRAGMA_NOUNROLL
-			for ( align = 1u; align <= 32u; align *= 2u ){
-				test_single(nmemb, size, align);
-			}
-		}
-#endif
-#if 1
-		PRAGMA_NOUNROLL
-		for ( nmemb = 10000uL; nmemb <= 100000uL; nmemb += 10000uL ){
-			PRAGMA_NOUNROLL
-			for ( align = 1u; align <= 32u; align *= 2u ){
-				test_single(nmemb, size, align);
-			}
-		}
-#endif
-	}
-	return 0;
-}
+/* EOF //////////////////////////////////////////////////////////////////// */
