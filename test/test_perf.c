@@ -9,6 +9,17 @@
 #error "UINTPTR_MAX < SIZE_MAX"
 #endif
 
+#define X_STRINGIFY(x_x)	#x_x
+#define STRINGIFY(x_x)		X_STRINGIFY(x_x)
+
+#if defined(__clang__)
+#define PRAGMA_NOUNROLL		_Pragma(STRINGIFY(nounroll))
+#elif defined(__GNUC__)
+#define PRAGMA_NOUNROLL		_Pragma(STRINGIFY(GCC unroll(0)))
+#else
+#define PRAGMA_NOUNROLL
+#endif	/* PRAGMA_NOUNROLL */
+
 extern void qsort_r(
 	void *, size_t, size_t,
 	int(*)(const void *, const void *, void *), void *
@@ -91,7 +102,6 @@ main(void)
 		 1u,  2u,  3u,  4u,  5u,  6u,  7u,  8u,
 		 9u, 10u, 11u, 12u, 13u, 14u, 15u, 16u,
 		20u, 24u, 28u, 32u,
-		//40u, 48u, 56u, 64u,
 		 0u
 	};
 	__attribute__((unused))
@@ -100,16 +110,17 @@ main(void)
 		0u
 	};
 	size_t nmemb, size, align;
+	__attribute__((unused))
 	unsigned int i;
 
 	srand(0x6969u);
 
 #if 0
-	#pragma nounroll
+	PRAGMA_NOUNROLL
 	for ( size = 1u; size <= 75u; ++size ){
 #else
-	#pragma nounroll
-	for ( i = 0; ; ++i ){
+	PRAGMA_NOUNROLL
+	for ( i = 0; 0==0 /* gcc */; ++i ){
 #if 1
 		size = nice_size_table[i];
 #else
@@ -119,34 +130,34 @@ main(void)
 			break;
 		}
 #endif
+
 #if 1
-		#pragma nounroll
+		PRAGMA_NOUNROLL
 		for ( nmemb = 1u; nmemb <= 100u; ++nmemb ){
-			#pragma nounroll
+			PRAGMA_NOUNROLL
 			for ( align = 1u; align <= 32u; align *= 2u ){
 				test_single(nmemb, size, align);
 			}
 		}
 #endif
 #if 1
-		#pragma nounroll
+		PRAGMA_NOUNROLL
 		for ( nmemb = 100u; nmemb <= 10000u; nmemb += 100u ){
-			#pragma nounroll
+			PRAGMA_NOUNROLL
 			for ( align = 1u; align <= 32u; align *= 2u ){
 				test_single(nmemb, size, align);
 			}
 		}
 #endif
 #if 1
-		#pragma nounroll
+		PRAGMA_NOUNROLL
 		for ( nmemb = 10000uL; nmemb <= 100000uL; nmemb += 10000uL ){
-			#pragma nounroll
+			PRAGMA_NOUNROLL
 			for ( align = 1u; align <= 32u; align *= 2u ){
 				test_single(nmemb, size, align);
 			}
 		}
 #endif
 	}
-	/*(void) printf("\n success\n");*/
 	return 0;
 }

@@ -196,7 +196,7 @@ quick_partition(
 	lo    = sec;
 
 	/* check if each item is <= the pivot */
-	#pragma unroll(2u)
+	PRAGMA_UNROLL(2u)
 	while LIKELY ( lo.idx <= hi.idx ){
 		if ( QSFP_COMPAR(lo.ptr, pivot.ptr) <= 0 ){
 			ITEM_NEXT(lo, lo, size);

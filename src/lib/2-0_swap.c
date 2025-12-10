@@ -491,15 +491,15 @@ swap_Na1(void *const RESTRICT a, void *const RESTRICT b)
 
 	ASSUME(n > SIZE_C(16));
 
-	#pragma nounroll
+	PRAGMA_NOUNROLL
 	for ( ; n >= SIZE_C(32); n -= 32u, i += 32u ){
 		swap_32a1(&a_x[i], &b_x[i]);
 	}
-	#pragma nounroll
+	PRAGMA_NOUNROLL
 	for ( ; n >= SIZE_C( 8); n -=  8u, i +=  8u ){
 		swap_8a1( &a_x[i], &b_x[i]);
 	}
-	#pragma nounroll
+	PRAGMA_NOUNROLL
 	for ( ; n >= SIZE_C( 2); n -=  2u, i +=  2u ){
 		swap_2a1( &a_x[i], &b_x[i]);
 	}

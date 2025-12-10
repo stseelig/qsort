@@ -174,7 +174,7 @@ shell_cmp_loop(
 		*next
 @*/
 {
-	#pragma unroll(3u)
+	PRAGMA_UNROLL(3u)
 	while ( QSFP_COMPAR(curr, next) > 0 ){
 		QSFP_SWAP(curr, next);
 		if ( idx1_p <= (uintptr_t) curr ){
