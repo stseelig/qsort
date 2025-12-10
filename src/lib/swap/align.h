@@ -66,9 +66,9 @@
 #define QSORT_ARCH_UNALIGNED_2_OK
 #define QSORT_ARCH_UNALIGNED_4_OK
 
-#ifdef __x86_64__
+#if defined(__x86_64__) || defined(__SSE__)
 #define QSORT_ARCH_UNALIGNED_8_OK
-#endif	/* __x86_64__ */
+#endif	/* __x86_64__ || __SSE__ */
 
 /* ------------------------------------------------------------------------ */
 
