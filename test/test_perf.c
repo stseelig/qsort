@@ -52,12 +52,12 @@
 #undef base
 extern void qsort_r(
 	void *base, size_t, size_t,
-	int(*)(const void *, const void *, void *), void *
+	int(*)(const void *, const void *, void *), /*@null@*/ void *
 )
 /*@modifies	*base@*/
 ;
 
-/*@only@*/
+/*@only@*/ /*@null@*/
 extern void *aligned_alloc(size_t, size_t)
 /*@globals	internalState@*/
 /*@modifies	internalState@*/
