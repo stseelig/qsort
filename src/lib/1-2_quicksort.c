@@ -96,7 +96,7 @@ qsort_quicksort(
 {
 	struct QuickSort_Stack stack;
 	struct QuickSort_Level level;
-	struct Item pivot, pivot_lo, pivot_hi;
+	struct Item pivot, pivot_next, pivot_prev;
 
 	/* assuming that: (ASSUME() may make things slower)
 	       - (nmemb > SIZE_C(1))
@@ -140,15 +140,17 @@ qsort_quicksort(
 		/* the current partition is overwritten with the new 'hi', and
 		     the 'lo' partition will be pushed to the top of the stack
 		     (next); working low to high through memory
+		   the pivot item is excluded from the new partitions as it is
+		     already in place
 		*/
-		ITEM_NEXT(pivot_hi, pivot, size);
-		stack.level[stack.depth].lo = pivot_hi;
+		ITEM_NEXT(pivot_next, pivot, size);
+		stack.level[stack.depth].lo = pivot_next;
 		stack.level[stack.depth].hi = level.hi;
 		if ( pivot.idx > 0 ){
 			stack.depth += 1u;
-			ITEM_PREV(pivot_lo, pivot, size);
+			ITEM_PREV(pivot_prev, pivot, size);
 			stack.level[stack.depth].lo = level.lo;
-			stack.level[stack.depth].hi = pivot_lo;
+			stack.level[stack.depth].hi = pivot_prev;
 		}
 	}
 	return;
