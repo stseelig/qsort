@@ -17,6 +17,7 @@
 
 /* ======================================================================== */
 
+/* qsort_r: stuffing a size_t into the 'arg' pointer */
 #if UINTPTR_MAX < SIZE_MAX
 #error "UINTPTR_MAX < SIZE_MAX"
 #endif
@@ -65,23 +66,14 @@ extern void *aligned_alloc(size_t, size_t)
 
 /* ======================================================================== */
 
-#undef base
-static void array_init(uint8_t *base, size_t)
-/*@globals	internalState@*/
-/*@modifies	internalState,
-		*base
+static void test_multi(size_t, size_t, size_t ,size_t)
+/*@globals	fileSystem,
+		internalState
+@*/
+/*@modifies	fileSystem,
+		internalState
 @*/
 ;
-
-/*@maynotreturn@*/
-static void array_sort_check(const uint8_t *, size_t, size_t)
-/*@globals	fileSystem@*/
-/*@modifies	fileSystem@*/
-;
-
-static int compar(const void *, const void *, void *) /*@*/;
-
-static size_t size_aligned_extra(size_t, size_t, size_t) /*@*/;
 
 static void test_single(size_t, size_t, size_t)
 /*@globals	fileSystem,
@@ -90,6 +82,24 @@ static void test_single(size_t, size_t, size_t)
 /*@modifies	fileSystem,
 		internalState
 @*/
+;
+
+static size_t size_aligned_extra(size_t, size_t, size_t) /*@*/;
+
+#undef base
+static void array_init(uint8_t *base, size_t)
+/*@globals	internalState@*/
+/*@modifies	internalState,
+		*base
+@*/
+;
+
+static int compar(const void *, const void *, void *) /*@*/;
+
+/*@maynotreturn@*/
+static void array_sort_check(const uint8_t *, size_t, size_t)
+/*@globals	fileSystem@*/
+/*@modifies	fileSystem@*/
 ;
 
 /* //////////////////////////////////////////////////////////////////////// */
@@ -117,7 +127,7 @@ main(void)
 		SIZE_C( 16), SIZE_C( 32), SIZE_C( 64), SIZE_C(128),
 		0
 	};
-	size_t nmemb, size, align;
+	size_t size;
 	/*@unused@*/ __attribute__((unused))
 	unsigned int i;
 
@@ -138,39 +148,13 @@ main(void)
 			break;
 		}
 #endif
+		test_multi(size, SIZE_C(1), SIZE_C(100), SIZE_C(1));
 
-#if 1
-		PRAGMA_NOUNROLL
-		for ( nmemb = SIZE_C(1); nmemb <= SIZE_C(100); ++nmemb ){
-			align = SIZE_C(1);
-			PRAGMA_NOUNROLL
-			for ( ; align <= SIZE_C(32); align *= 2u ){
-				test_single(nmemb, size, align);
-			}
-		}
-#endif
-#if 1
-		nmemb = SIZE_C(100);
-		PRAGMA_NOUNROLL
-		for ( ; nmemb <= SIZE_C(10000); nmemb += 100u ){
-			align = SIZE_C(1);
-			PRAGMA_NOUNROLL
-			for ( ; align <= SIZE_C(32); align *= 2u ){
-				test_single(nmemb, size, align);
-			}
-		}
-#endif
-#if 1
-		nmemb = SIZE_C(10000);
-		PRAGMA_NOUNROLL
-		for ( ; nmemb <= SIZE_C(100000); nmemb += 10000u ){
-			align = SIZE_C(1);
-			PRAGMA_NOUNROLL
-			for ( ; align <= SIZE_C(32); align *= 2u ){
-				test_single(nmemb, size, align);
-			}
-		}
-#endif
+		test_multi(size, SIZE_C(100), SIZE_C(10000), SIZE_C(100));
+
+		test_multi(
+			size, SIZE_C(10000), SIZE_C(100000), SIZE_C(10000)
+		);
 	}
 	return 0;
 }
@@ -178,62 +162,27 @@ main(void)
 /* ------------------------------------------------------------------------ */
 
 static void
-array_init(uint8_t *const base, const size_t size_array)
-/*@globals	internalState@*/
-/*@modifies	internalState,
-		*base
+test_multi(
+	const size_t size, const size_t start, const size_t limit,
+	const size_t increment
+)
+/*@globals	fileSystem,
+		internalState
+@*/
+/*@modifies	fileSystem,
+		internalState
 @*/
 {
-	int r;
-	size_t i;
+	size_t nmemb, align;
 
-	for ( i = 0; i + (sizeof r) <= size_array; i += (sizeof r) ){
-		r = rand();
-		(void) memcpy(&base[i], &r, (sizeof r));
-	}
-	if ( i < size_array ){
-		r = rand();
-		(void) memcpy(&base[i], &r, size_array - i);
-	}
-	return;
-}
-
-/*@maynotreturn@*/
-static void
-array_sort_check(
-	const uint8_t *const base, const size_t nmemb, const size_t size
-)
-/*@globals	fileSystem@*/
-/*@modifies	fileSystem@*/
-{
-	int cmp;
-	size_t i;
-
-	for ( i = 0; i + 1u < nmemb; ++i ){
-		cmp = memcmp(&base[i * size], &base[(i + 1u) * size], size);
-		if ( cmp > 0 ){
-			(void) printf("\n!!!   fail   !!!\n");
-			abort();
+	PRAGMA_NOUNROLL
+	for ( nmemb = start; nmemb <= limit; nmemb += increment ){
+		PRAGMA_NOUNROLL
+		for ( align = SIZE_C(1); align <= SIZE_C(32); align *= 2u ){
+			test_single(nmemb, size, align);
 		}
 	}
 	return;
-}
-
-static int
-compar(const void *a, const void *b, void *arg)
-/*@*/
-{
-	return memcmp(a, b, (size_t) ((uintptr_t) arg));
-}
-
-static size_t
-size_aligned_extra(const size_t nmemb, const size_t size, const size_t align)
-/*@*/
-{
-	const size_t size_a = (nmemb + (align / size) + 1u) * size;
-	const size_t mod    = size_a % align;
-
-	return size_a + (mod != 0 ? align - mod : 0);
 }
 
 static void
@@ -265,6 +214,65 @@ test_single(const size_t nmemb, const size_t size, const size_t align)
 
 	free(ptr);
 
+	return;
+}
+
+static size_t
+size_aligned_extra(const size_t nmemb, const size_t size, const size_t align)
+/*@*/
+{
+	const size_t size_a = (nmemb + (align / size) + 1u) * size;
+	const size_t mod    = size_a % align;
+
+	return size_a + (mod != 0 ? align - mod : 0);
+}
+
+static void
+array_init(uint8_t *const base, const size_t size_array)
+/*@globals	internalState@*/
+/*@modifies	internalState,
+		*base
+@*/
+{
+	int r;
+	size_t i;
+
+	for ( i = 0; i + (sizeof r) <= size_array; i += (sizeof r) ){
+		r = rand();
+		(void) memcpy(&base[i], &r, (sizeof r));
+	}
+	if ( i < size_array ){
+		r = rand();
+		(void) memcpy(&base[i], &r, size_array - i);
+	}
+	return;
+}
+
+static int
+compar(const void *a, const void *b, void *arg)
+/*@*/
+{
+	return memcmp(a, b, (size_t) ((uintptr_t) arg));
+}
+
+/*@maynotreturn@*/
+static void
+array_sort_check(
+	const uint8_t *const base, const size_t nmemb, const size_t size
+)
+/*@globals	fileSystem@*/
+/*@modifies	fileSystem@*/
+{
+	int cmp;
+	size_t i;
+
+	for ( i = 0; i + 1u < nmemb; ++i ){
+		cmp = memcmp(&base[i * size], &base[(i + 1u) * size], size);
+		if ( cmp > 0 ){
+			(void) printf("\n!!!   fail   !!!\n");
+			abort();
+		}
+	}
 	return;
 }
 
