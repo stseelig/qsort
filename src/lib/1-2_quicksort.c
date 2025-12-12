@@ -115,21 +115,21 @@ qsort_quicksort(
 		nmemb = level.hi.idx - level.lo.idx + 1u;
 
 		if UNLIKELY ( nmemb < SIZE_C(2) ){
-			if ( stack.depth-- > 0 ){
+			if ( stack.depth-- != 0 ){
 				continue;
 			}
 			else {	break; }
 		}
 		else if ( nmemb <= QSORT_SHELLSORT_MAX_NMEMB ){
 			qsort_shellsort(level.lo.ptr, nmemb, size, qsfp);
-			if ( stack.depth-- > 0 ){
+			if ( stack.depth-- != 0 ){
 				continue;
 			}
 			else {	break; }
 		}
 		else if UNLIKELY ( stack.depth == stack.depth_max ){
 			qsort_heapsort(level.lo.ptr, nmemb, size, qsfp);
-			if ( stack.depth-- > 0 ){
+			if ( stack.depth-- != 0 ){
 				continue;
 			}
 			else {	break; }
@@ -146,7 +146,7 @@ qsort_quicksort(
 		ITEM_NEXT(pivot_next, pivot, size);
 		stack.level[stack.depth].lo = pivot_next;
 		stack.level[stack.depth].hi = level.hi;
-		if ( pivot.idx > 0 ){
+		if ( pivot.idx != 0 ){
 			stack.depth += 1u;
 			ITEM_PREV(pivot_prev, pivot, size);
 			stack.level[stack.depth].lo = level.lo;
