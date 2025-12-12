@@ -96,6 +96,26 @@ ITEM_BUILD(uint8_t *const base, const size_t idx, const size_t size)
 	return retval;
 }
 
+/**@fn ITEM_PTR_NEXT
+ * @return pointer to the next item in the array
+ *
+ * @param ptr  - item pointer
+ * @param size - size of an array item
+**/
+#define ITEM_PTR_NEXT(x_ptr, x_size)	( \
+	&((uint8_t *) (x_ptr))[(x_size)] \
+)
+
+/**@fn ITEM_PTR_PREV
+ * @return pointer to the previous item in the array
+ *
+ * @param ptr  - item pointer
+ * @param size - size of an array item
+**/
+#define ITEM_PTR_PREV(x_ptr, x_size)	( \
+	(uint8_t *) (((uintptr_t) (x_ptr)) - (x_size)) \
+)
+
 /**@fn ITEM_NEXT
  * @brief puts the item after 'src' into 'dest'
  *
@@ -106,7 +126,7 @@ ITEM_BUILD(uint8_t *const base, const size_t idx, const size_t size)
  * @param size - size of an array item
 **/
 #define ITEM_NEXT(x_dest, x_src, x_size) { \
-	(x_dest).ptr = &(x_src).ptr[(x_size)]; \
+	(x_dest).ptr = ITEM_PTR_NEXT((x_src).ptr, (x_size)); \
 	(x_dest).idx = (x_src).idx + 1u; \
 }
 
@@ -120,7 +140,7 @@ ITEM_BUILD(uint8_t *const base, const size_t idx, const size_t size)
  * @param size - size of an array item
 **/
 #define ITEM_PREV(x_dest, x_src, x_size) { \
-	(x_dest).ptr = (uint8_t *) (((uintptr_t) (x_src).ptr) - (x_size)); \
+	(x_dest).ptr = ITEM_PTR_PREV((x_src).ptr, (x_size)); \
 	(x_dest).idx = (x_src).idx - 1u; \
 }
 

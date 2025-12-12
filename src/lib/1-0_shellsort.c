@@ -116,7 +116,7 @@ shell_sets_loop(
 	ASSUME(nmemb > gap);	/* helpful */
 
 	do {	curr = base;
-		base = &base[size];	/* base is now the index-1 address */
+		base = ITEM_PTR_NEXT(base, size);
 		shell_items_loop(
 			(uintptr_t) base, nmemb, gap_size, qsfp,
 			gap, curr, set_idx
@@ -149,7 +149,7 @@ shell_items_loop(
 
 	/* max 'nmemb' is very small, so the increment cannot overflow */
 	while ( (item_idx += gap) < nmemb ){
-		next = &curr[gap_size];
+		next = ITEM_PTR_NEXT(curr, gap_size);
 		shell_cmp_loop(curr, next, idx1_p, gap_size, qsfp);
 		curr = next;
 	}
@@ -179,7 +179,7 @@ shell_cmp_loop(
 		QSFP_SWAP(curr, next);
 		if ( idx1_p <= (uintptr_t) curr ){
 			next = curr;
-			curr = (uint8_t *) (((uintptr_t) curr) - gap_size);
+			curr = ITEM_PTR_PREV(curr, gap_size);
 		}
 		else { break; }
 	}

@@ -122,7 +122,7 @@ heap_heapify(
 
 	/* walk the array backwards from the last branch to index-0 */
 	do {	heap_siftdown(base, nmemb, size, qsfp, node);
-		node.ptr = (uint8_t *) (((uintptr_t) node.ptr) - size);
+		node.ptr = ITEM_PTR_PREV(node.ptr, size);
 	}
 	while ( node.idx-- != 0 );
 
@@ -149,31 +149,31 @@ heap_sort(
 	const struct Item right = ITEM_BUILD(base, SIZE_C(2), size);
 	/* * */
 	struct Item branch;
-	uintptr_t last = (uintptr_t) HEAP_PTR_LASTNODE(base, nmemb, size);
+	uint8_t *last = HEAP_PTR_LASTNODE(base, nmemb, size);
 	int cmp;
 
 	ASSUME(nmemb > SIZE_C(1));
 
 	/* 2x sift loop (I tried a 3x sift loop, but it was slower) */
-	while ( nmemb > SIZE_C(3) ){
-		QSFP_SWAP((void *) last, base);
+	while ( (nmemb -= 2u) > SIZE_C(1) ){
+		QSFP_SWAP(last, base);
+		last   = ITEM_PTR_PREV(last, size);
 
 		cmp    = QSFP_COMPAR(left.ptr, right.ptr);
 		branch = (cmp >= 0 ? left : right);
-		last  -= size;
-		QSFP_SWAP((void *) last, branch.ptr);
+		QSFP_SWAP(last, branch.ptr);
+		last   = ITEM_PTR_PREV(last, size);
 
-		nmemb -= 2u;
 		heap_siftdown(base, nmemb, size, qsfp, branch);
 		heap_siftdown(base, nmemb, size, qsfp, root);
-		last  -= size;
 	}
 
 	/* tail: 2 or 3 items left */
-	QSFP_SWAP((void *) last, base);
-	if ( (last -= size) != (uintptr_t) base ){
-		if ( QSFP_COMPAR((void *) last, base) < 0 ){
-			QSFP_SWAP((void *) last, base);
+	QSFP_SWAP(last, base);
+	last = ITEM_PTR_PREV(last, size);
+	if ( (uintptr_t) last != (uintptr_t) base ){
+		if ( QSFP_COMPAR(last, base) < 0 ){
+			QSFP_SWAP(last, base);
 		}
 	}
 	return;
@@ -221,7 +221,7 @@ heap_siftdown(
 			break;
 		} else{;}
 
-		twin_ptr = &node.ptr[size];
+		twin_ptr = ITEM_PTR_NEXT(node.ptr, size);
 		if ( QSFP_COMPAR(twin_ptr, root_ptr) > 0 ){
 			if ( QSFP_COMPAR(twin_ptr, node.ptr) >= 0 ){
 				node.ptr  = twin_ptr;
