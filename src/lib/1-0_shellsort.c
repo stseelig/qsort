@@ -41,14 +41,10 @@ ALWAYS_INLINE void shell_items_loop(
 ;
 
 #undef curr
-#undef next
 ALWAYS_INLINE void shell_cmp_loop(
-	uint8_t *curr, uint8_t *next, uintptr_t, size_t,
-	const struct QSortFnPtrs *RESTRICT
+	uint8_t *curr, uintptr_t, size_t, const struct QSortFnPtrs *RESTRICT
 )
-/*@modifies	*curr,
-		*next
-@*/
+/*@modifies	*curr@*/
 ;
 
 /* //////////////////////////////////////////////////////////////////////// */
@@ -145,13 +141,10 @@ shell_items_loop(
 )
 /*@modifies	*curr@*/
 {
-	uint8_t *next;
-
 	/* max 'nmemb' is very small, so the increment cannot overflow */
 	while ( (item_idx += gap) < nmemb ){
-		next = ITEM_PTR_NEXT(curr, gap_size);
-		shell_cmp_loop(curr, next, idx1_p, gap_size, qsfp);
-		curr = next;
+		shell_cmp_loop(curr, idx1_p, gap_size, qsfp);
+		curr = ITEM_PTR_NEXT(curr, gap_size);
 	}
 	return;
 }
@@ -160,20 +153,19 @@ shell_items_loop(
  * @brief compare/insertion-sort the current item within its gap-set
  *
  * @param curr     - pointer to the current array item
- * @param next     - pointer to the next item in the gap-set
  * @param idx1_p   - address of the first item in the next gap-set
  * @param gap_size - number of bytes in the shellsort gap
  * @param qsfp     - pointer to the 'compar' and 'swap' functions
 **/
 ALWAYS_INLINE void
 shell_cmp_loop(
-	uint8_t *curr, uint8_t *next, const uintptr_t idx1_p,
-	const size_t gap_size, const struct QSortFnPtrs *RESTRICT const qsfp
+	uint8_t *curr, const uintptr_t idx1_p, const size_t gap_size,
+	const struct QSortFnPtrs *RESTRICT const qsfp
 )
-/*@modifies	*curr,
-		*next
-@*/
+/*@modifies	*curr@*/
 {
+	uint8_t *next = ITEM_PTR_NEXT(curr, gap_size);
+
 	PRAGMA_UNROLL(3u)
 	while ( QSFP_COMPAR(curr, next) > 0 ){
 		QSFP_SWAP(curr, next);
