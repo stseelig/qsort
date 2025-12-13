@@ -33,16 +33,18 @@ ALWAYS_INLINE void shell_sets_loop(
 ;
 
 #undef curr
-ALWAYS_INLINE void shell_items_loop(
-	uintptr_t, size_t, size_t, const struct QSortFnPtrs *RESTRICT,
-	size_t , uint8_t *curr, size_t
+/*@temp@*/
+ALWAYS_INLINE uint8_t *shell_items_loop(
+	uint8_t *RESTRICT curr, size_t, size_t,
+	const struct QSortFnPtrs *RESTRICT, size_t, size_t
 )
 /*@modifies	*curr@*/
 ;
 
 #undef curr
-ALWAYS_INLINE void shell_cmp_loop(
-	uint8_t *curr, uintptr_t, size_t, const struct QSortFnPtrs *RESTRICT
+/*@temp@*/
+ALWAYS_INLINE uint8_t *shell_cmp_loop(
+	uint8_t *curr, uint8_t *, size_t, const struct QSortFnPtrs *RESTRICT
 )
 /*@modifies	*curr@*/
 ;
@@ -103,19 +105,14 @@ shell_sets_loop(
 )
 /*@modifies	*base@*/
 {
-	const size_t gap_size = gap * size;
-	const size_t limit    = (nmemb - gap < gap ? nmemb - gap : gap);
+	const size_t limit = (nmemb - gap < gap ? nmemb - gap : gap);
 	/* * */
-	uint8_t *curr;
 	size_t set_idx = 0;
 
 	ASSUME(nmemb > gap);	/* helpful */
 
-	do {	curr = base;
-		base = ITEM_PTR_NEXT(base, size);
-		shell_items_loop(
-			(uintptr_t) base, nmemb, gap_size, qsfp,
-			gap, curr, set_idx
+	do {	base = shell_items_loop(
+			base, nmemb, size, qsfp, gap, set_idx
 		);
 	} while ( ++set_idx < limit );
 
@@ -125,57 +122,65 @@ shell_sets_loop(
 /**@fn shell_items_loop
  * @brief loop through each item within a gap-set
  *
- * @param idx1_p   - address of the first item in the next gap-set
+ * @return the next 'base' for shell_sets_loop()
+ *
+ * @param curr     - pointer to the current array item
  * @param nmemb    - number of items in the array
- * @param gap_size - number of bytes in the shellsort gap
+ * @param size     - size of each array item
  * @param qsfp     - pointer to the 'compar' and 'swap' functions
  * @param gap      - number of items in the shellsort gap
- * @param curr     - pointer to the first item in the gap-set
  * @param item_idx - index of 'curr' within the array
 **/
-ALWAYS_INLINE void
+/*@temp@*/
+ALWAYS_INLINE uint8_t *
 shell_items_loop(
-	const uintptr_t idx1_p, const size_t nmemb, const size_t gap_size,
+	uint8_t *RESTRICT curr, const size_t nmemb, const size_t size,
 	const struct QSortFnPtrs *const RESTRICT qsfp, const size_t gap,
-	uint8_t *curr, size_t item_idx
+	size_t item_idx
 )
 /*@modifies	*curr@*/
 {
+	uint8_t *const idx1_p = ITEM_PTR_NEXT(curr, size);
+
 	/* max 'nmemb' is very small, so the increment cannot overflow */
 	while ( (item_idx += gap) < nmemb ){
-		shell_cmp_loop(curr, idx1_p, gap_size, qsfp);
-		curr = ITEM_PTR_NEXT(curr, gap_size);
+		curr = shell_cmp_loop(curr, idx1_p, gap * size, qsfp);
 	}
-	return;
+	return idx1_p;
 }
 
 /**@fn shell_cmp_loop
  * @brief compare/insertion-sort the current item within its gap-set
  *
+ * @return the next 'curr' for shell_items_loop()
+ *
  * @param curr     - pointer to the current array item
- * @param idx1_p   - address of the first item in the next gap-set
+ * @param idx1_p   - pointer to the first item in the next gap-set
  * @param gap_size - number of bytes in the shellsort gap
  * @param qsfp     - pointer to the 'compar' and 'swap' functions
 **/
-ALWAYS_INLINE void
+/*@temp@*/
+ALWAYS_INLINE uint8_t *
 shell_cmp_loop(
-	uint8_t *curr, const uintptr_t idx1_p, const size_t gap_size,
+	uint8_t *curr, uint8_t *const idx1_p, const size_t gap_size,
 	const struct QSortFnPtrs *RESTRICT const qsfp
 )
 /*@modifies	*curr@*/
 {
-	uint8_t *next = ITEM_PTR_NEXT(curr, gap_size);
+	uint8_t *const retval = ITEM_PTR_NEXT(curr, gap_size);
+	/* * */
+	uint8_t *next = retval;
 
 	PRAGMA_UNROLL(3u)
 	while ( QSFP_COMPAR(curr, next) > 0 ){
 		QSFP_SWAP(curr, next);
-		if ( idx1_p <= (uintptr_t) curr ){
+		if ( (uintptr_t) curr >= (uintptr_t) idx1_p ){
 			next = curr;
 			curr = ITEM_PTR_PREV(curr, gap_size);
 		}
 		else { break; }
 	}
-	return;
+	return retval;
 }
 
 /* EOF //////////////////////////////////////////////////////////////////// */
