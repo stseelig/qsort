@@ -211,25 +211,28 @@ quick_partition(
 	}
 
 	/* main compare/swap loop */
-	goto loop_entr;
-	do {	QSFP_SWAP(lo.ptr, hi.ptr);
-
-		/* find the next leftmost item > the pivot */
-		while ( QSFP_COMPAR(lo.ptr, pivot.ptr) <= 0 ){
-			ITEM_NEXT(lo, lo, size);
-			if ( lo.idx >= hi.idx ){
-				goto loop_exit;
-			}
-		}
-loop_entr:
-		/* find the next rightmost item <= the pivot */
+	for(;;) {
+		/* find the next highest item <= the pivot */
 		while ( QSFP_COMPAR(hi.ptr, pivot.ptr) >  0 ){
 			ITEM_PREV(hi, hi, size);
 			if ( lo.idx >= hi.idx ){
 				goto loop_exit;
 			}
 		}
-	} while LIKELY ( lo.idx < hi.idx );
+
+		if LIKELY ( lo.idx < hi.idx ){
+			QSFP_SWAP(lo.ptr, hi.ptr);
+		}
+		else {	break; }
+
+		/* find the next lowest item > the pivot */
+		while ( QSFP_COMPAR(lo.ptr, pivot.ptr) <= 0 ){
+			ITEM_NEXT(lo, lo, size);
+			if ( lo.idx >= hi.idx ){
+				goto loop_exit;
+			}
+		}
+	}
 loop_exit:
 
 	/* swap the pivot into place */
